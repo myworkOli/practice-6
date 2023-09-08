@@ -1,29 +1,56 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <DbGears xmlns="http://chameleon.ibs-qa.ru/schema/db">
-    <Connection name="H2" driver="org.h2.Driver" url="jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;user=#{user};password=#{password}" autoCommit="true">
+    <Connection name="H2" driver="org.h2.Driver" autoCommit="true"
+                url="jdbc:h2:tcp://localhost:9092/mem:testdb;user=#{user};password=#{password}">
         <Params>
             <FieldString name="Пользователь" locator="user"/>
             <FieldString name="Пароль" locator="password"/>
         </Params>
     </Connection>
-    <Query name="Создание таблицы" statement="CREATE TABLE PERSON(id int primary key, name varchar(255))"/>
-    <Query name="Добавление пользователя" statement="INSERT INTO PERSON(id, name) values(:id,:name)">
-        <Params>
-            <FieldInteger name="Идентификатор" locator="id"/>
-            <FieldString name="Имя" locator="name"/>
-        </Params>
-    </Query>
-    <Query name="Добавление пользователя (sql)" statement="classpath:/sql/insert.sql">
-        <Params>
-            <FieldInteger name="Идентификатор" locator="id"/>
-            <FieldString name="Имя" locator="name"/>
-        </Params>
-    </Query>
-    <Query name="Перечень пользователей" statement="select * from PERSON order by id">
+    <Query name="Запись с максимальным ID" statement="SELECT FOOD_ID FROM FOOD ORDER BY FOOD_ID DESC LIMIT 1">
         <Result>
-            <FieldInteger name="Идентификатор" locator="id"/>
-            <FieldString name="Имя" locator="name"/>
+            <FieldInteger locator="FOOD_ID" name="Идентификатор"/>
         </Result>
     </Query>
-    <Query name="Удаление таблицы" statement="DROP TABLE PERSON"/>
+    <Query statement="SELECT * FROM FOOD WHERE FOOD_NAME=:FOOD_NAME AND FOOD_TYPE=:FOOD_TYPE AND FOOD_EXOTIC=:FOOD_EXOTIC " name="Выборка из списка товаров">
+        <Params>
+            <FieldString locator="FOOD_NAME" name="Наименование"/>
+            <FieldString locator="FOOD_TYPE" name="Тип"/>
+            <FieldInteger name="Экзотический" locator="FOOD_EXOTIC"/>
+        </Params>
+        <Result>
+            <FieldString name="Наименование" locator="FOOD_NAME"/>
+            <FieldString locator="FOOD_TYPE" name="Тип"/>
+            <FieldInteger name="Экзотический" locator="FOOD_EXOTIC"/>
+            <FieldInteger name="Идентификатор" locator="FOOD_ID"/>
+        </Result>
+    </Query>
+    <Query name="Добавление товара " statement="classpath:/sql/insert.sql">
+        <Params>
+            <FieldString name="Наименование" locator="FOOD_NAME"/>
+            <FieldString name="Тип" locator="FOOD_TYPE"/>
+            <FieldInteger locator="FOOD_EXOTIC" name="Экзотический"/>
+        </Params>
+    </Query>
+    <Query name="Удаление добавленного товара" statement="DELETE FROM FOOD WHERE FOOD_NAME=:FOOD_NAME and FOOD_TYPE=:FOOD_TYPE and FOOD_EXOTIC=:FOOD_EXOTIC">
+        <Params>
+            <FieldString name="Наименование" locator="FOOD_NAME"/>
+            <FieldString name="Тип" locator="FOOD_TYPE"/>
+            <FieldString name="Экзотический" locator="FOOD_EXOTIC"/>
+        </Params>
+    </Query>
+    <Query name="Выборка из списка товаров  в конце"
+           statement="SELECT * FROM FOOD WHERE FOOD_NAME=:FOOD_NAME AND FOOD_TYPE=:FOOD_TYPE AND FOOD_EXOTIC=:FOOD_EXOTIC ">
+        <Params name="Параметры запроса">
+            <FieldString name="Наименование" locator="FOOD_NAME"/>
+            <FieldString name="Тип" locator="FOOD_TYPE"/>
+            <FieldInteger name="Экзотический" locator="FOOD_EXOTIC"/>
+        </Params>
+        <Result>
+            <FieldString name="Наименование" locator="FOOD_NAME"/>
+            <FieldInteger name="Идентификатор" locator="FOOD_ID"/>
+            <FieldString name="Экзотический" locator="FOOD_EXOTIC"/>
+            <FieldString name="Тип" locator="FOOD_TYPE"/>
+        </Result>
+    </Query>
 </DbGears>
